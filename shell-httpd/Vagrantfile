@@ -1,0 +1,23 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+
+   config.vm.box = "puppetlabs/centos-6.6-64-puppet"
+
+   config.vm.network "private_network", ip: "192.168.33.10"
+
+
+   config.vm.provision "shell", inline: <<-SHELL
+     sudo yum install -y httpd
+     sudo service httpd start
+     sudo iptables -F 
+     sudo iptables -A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
+
+
+     sudo echo "Hello everyone!<br/>" > /var/www/html/index.html
+     sudo  date +"%A %B %d %Y %I:%M:%S %p %z" >> /var/www/html/index.html
+     sudo iptables -A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
+
+   SHELL
+end 
